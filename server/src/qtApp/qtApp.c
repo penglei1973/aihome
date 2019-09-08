@@ -4,6 +4,7 @@
 int main(void)
 {
     Register();
+    InitializeDatabase();
 
     int server_sock = -1;
     unsigned short port = 6666;

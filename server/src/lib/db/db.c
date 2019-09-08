@@ -4,6 +4,25 @@
 #include <stdlib.h>
 #include <string.h>
 
+bool InitializeDatabase()
+{
+    char *zErrMsg = 0;
+    int rc;
+    sqlite3 * db; 
+    char * sql = "CREATE TABLE USERS(UNAME TEXT INTPRIMARY KEY NOT NULL, PASSWORD TEXT)";
+    db = db_open();
+
+    rc = sqlite3_exec(db, sql, NULL, 0, &zErrMsg);
+    if( rc != SQLITE_OK ){
+        //fprintf(stderr, "SQL error: %s\n", zErrMsg);
+        sqlite3_free(zErrMsg);
+        db_close(db);
+        return false;
+    }
+
+    db_close(db);
+    return true;
+}
 
 sqlite3 * db_open()
 {
@@ -28,7 +47,7 @@ void db_close(sqlite3 * db)
     sqlite3_close(db);
 }
 
-extern int show_table(sqlite3 * pdb, const char * table_name)
+int show_table(sqlite3 * pdb, const char * table_name)
 {
     char * perrmsg;
     char ** dbResult;
@@ -44,6 +63,7 @@ extern int show_table(sqlite3 * pdb, const char * table_name)
     if (ret != SQLITE_OK)
     {
         fprintf(stderr, "exec %s error : %s\n", sql, perrmsg);
+        db_close(pdb);
         exit(EXIT_FAILURE);
     }
 

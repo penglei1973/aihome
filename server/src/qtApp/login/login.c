@@ -13,14 +13,18 @@ void * userLogin(responseWriter w, request * r)
 {
     char userName[1024];
     char passWord[1024];
+    int stateCode;
     getValueFromBody(r, "userName", userName); 
     getValueFromBody(r, "passWord", passWord); 
 
     printf("userName: %s\n", userName);
     printf("passWord: %s\n", passWord);
 
-    setValueToBody(&w, "age", (void *)18, INT_MODE);
-    setValueToBody(&w, "sex", (void *)"nan", STRING_MODE);
+    stateCode = allow_login(userName, passWord);
+
+    setValueToBody(&w, "userToken", (void *)"Qrt3T4", STRING_MODE);
+    setValueToBody(&w, "stateCode", (void *)stateCode, INT_MODE);
+
 
     sendw(w);
 }
@@ -40,6 +44,7 @@ bool add_user(const char * uname, const char * password)
         sqlite3_free(zErrMsg);
         return false;
     }else{
+        db_close(db);
         fprintf(stdout, "Records created successfully\n");
     }
 
@@ -47,7 +52,7 @@ bool add_user(const char * uname, const char * password)
     return true;
 }
 
-bool allow_login(const char * uname, const char * password)
+int allow_login(const char * uname, const char * password)
 {
     sqlite3 * db; 
     db = db_open();
@@ -65,22 +70,30 @@ bool allow_login(const char * uname, const char * password)
     if (ret != SQLITE_OK)
     {
         fprintf(stderr, "exec %s error : %s\n", sql, perrmsg);
-        return false;
+        db_close(db);
+        return 0;
     }
+
+    if (n_row == 0)
+    {
+        return 2;
+    }
+    printf("row = %d, column = %d\n", n_row, n_column);
 
     strcpy(real_password, dbResult[n_row + n_column - 1]);
 
     if ((strncmp(password, real_password, strlen(password)) == 0) 
         && (strlen(password) == strlen(real_password)))
     {
-        return true;
+        db_close(db);
+        return 0;
     }
     else 
     {
-        return false;
+        db_close(db);
+        return 3;
     }
 
-    db_close(db);
 }
 
 void delete_user(const char * uname)

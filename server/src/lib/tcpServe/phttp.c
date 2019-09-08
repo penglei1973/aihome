@@ -87,6 +87,8 @@ void accept_request(void * arg)
         close(client);
         exit(-1);
     }
+
+    w.funcCode = r->funcCode;
   
     printf("msgType = %#x\n", r->msgType);
     printf("funcCode = %#x\n", r->funcCode);
@@ -124,7 +126,14 @@ bool bufToRequset(request * r, const char * buf)
 
 void * sendw(responseWriter w)
 {
+    char buf[1024];
+
     w.msgType = 0xff; 
     w.bodyLen = strlen(w.body);
-    printf("sendw\n");  
+    
+    send(w.client, (void *)&w.msgType, sizeof(w.msgType), 0);
+    send(w.client, (void *)&w.funcCode, sizeof(w.funcCode), 0);
+    send(w.client, (void *)&w.bodyLen, sizeof(w.bodyLen), 0);
+    send(w.client, (void *)w.body, w.bodyLen, 0);
+
 }

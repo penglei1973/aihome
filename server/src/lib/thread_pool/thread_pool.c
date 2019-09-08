@@ -1,26 +1,3 @@
-/*
- ************************************************************************************************
- *Copyright  : Grassroots teacher,farsight wuhang
- *File name  : thread_pool.c
- *Description: These codes are all about the operation of the thread pool.Everyone of fasight 
- *             is free to read and modify the code.Each of the changes,in the historical records 
- *             indicate that you modify the place as well as the resons for the chages.
- *             When you use the thread pool code,you  only need to call the following functions:
- *             <1> create_thread_pool,it can help you create a thread pool.
- *             <2> requst_thread_work,it can help you get an idle thread from thread pool,and you 
- *             can use the idle thread to do what you need to do.
- *Author     : chengyaogen
- *Version    : 0.1
- *Date       : 2015-12-26
- *History    : no
- *Note       : When a thread pool is created,a clean thread can run.This cleaning thread will 
- *             always observe the thread pool in the thread pool of the number of idle threads,
- *             if the number of idle threads to reach the maximum number of threads can accommodate 
- *             the thread pool,clean up thread will clear a part of the thread,so that the thread pool 
- *             with a minimum number of threads.The main purpose of this is to free a part of the idle 
- *             threads at the timer of the server,to reduce the overhead of the server resources.
- ***********************************************************************************************
- */
 #include <stdio.h>
 #include <stdlib.h>
 #include <pthread.h>
