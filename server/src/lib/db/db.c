@@ -9,7 +9,7 @@ bool InitializeDatabase()
     char *zErrMsg = 0;
     int rc;
     sqlite3 * db; 
-    char * sql = "CREATE TABLE USERS(UNAME TEXT INTPRIMARY KEY NOT NULL, PASSWORD TEXT)";
+    char * sql = "CREATE TABLE USERS(UNAME TEXT PRIMARY KEY NOT NULL, PASSWORD TEXT, PHONE_NO TEXT)";
     db = db_open();
 
     rc = sqlite3_exec(db, sql, NULL, 0, &zErrMsg);
@@ -19,6 +19,8 @@ bool InitializeDatabase()
         db_close(db);
         return false;
     }
+
+    add_user("testu", "testp", "17633333333");
 
     db_close(db);
     return true;
@@ -36,7 +38,7 @@ sqlite3 * db_open()
         fprintf(stderr, "Can't open database: %s\n", sqlite3_errmsg(db));
         exit(0);
     }else{
-        fprintf(stderr, "Opened database successfully\n");
+        //fprintf(stderr, "Opened database successfully\n");
     }
 
     return db;

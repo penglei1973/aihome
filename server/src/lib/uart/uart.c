@@ -18,11 +18,12 @@
  * 入口参数： fd    :文件描述符     port :串口号(ttyS0,ttyS1,ttyS2)
  * 出口参数： 正确返回为1，错误返回为0
  *******************************************************************/
-int uart_open(char * serial_port) 
+int uart_open(const char * serial_port) 
 {
 	int fd;
 
 	fd = open(serial_port, O_RDWR|O_NOCTTY | O_NDELAY);
+    printf("fd = %d\n", fd);
 	if (FALSE == fd){
 		perror("Can't Open Serial Port");
 		return(FALSE);
@@ -224,47 +225,30 @@ int uart_init(int fd,int speed,int flow_ctrl,int databits,int stopbits,int parit
  **********************************************************************************/
 int uart_recv(int fd, char *rcv_buf,int data_len,struct timeval *timeout)
 {
-	int count = 0;
-	int len = 0,ret;
-	fd_set fs_read;
+    int count = 0;
+    int len = 0,ret;
+    fd_set fs_read;
 
-    FD_ZERO(&fs_read);
-    FD_SET(fd,&fs_read);
+    while(count < data_len){
+        FD_ZERO(&fs_read);
+        FD_SET(fd,&fs_read);
 
-    //使用select实现串口的多路通信
-    ret = select(fd+1,&fs_read,NULL,NULL,timeout);
-    if(ret == -1){
-        printf("fail to select : %s\n",strerror(errno));
-        return TRUE;
-    }else if(ret){
-        len = read(fd, rcv_buf, data_len);
-        return TRUE;
-    }else if (ret == 0){
-        printf("Uart recv timeout!\n");
-        return FALSE;
+        //使用select实现串口的多路通信
+        ret = select(fd+1,&fs_read,NULL,NULL,timeout);
+        if(ret == -1){
+            printf("fail to select : %s\n",strerror(errno));
+            break;
+        }else if(ret){
+            len = read(fd,rcv_buf + count,data_len - count);
+            count += len;
+            printf("-------len : %d--------\n",len);
+        }else{
+            printf("Uart recv timeout!\n");
+            break;
+        }
     }
 
-    /*
-	while(count < data_len){
-		FD_ZERO(&fs_read);
-		FD_SET(fd,&fs_read);
-
-		//使用select实现串口的多路通信
-		ret = select(fd+1,&fs_read,NULL,NULL,timeout);
-		if(ret == -1){
-			printf("fail to select : %s\n",strerror(errno));
-			break;
-		}else if(ret){
-			len = read(fd,rcv_buf + count,data_len - count);
-			count += len;
-		}else if (ret == 0){
-			printf("Uart recv timeout!\n");
-			break;
-		}
-	}
-    */
-
-	//return ret;
+    return ret;
 }
 
 /********************************************************************

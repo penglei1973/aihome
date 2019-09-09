@@ -90,10 +90,12 @@ void accept_request(void * arg)
 
     w.funcCode = r->funcCode;
   
+#if 1
     printf("msgType = %#x\n", r->msgType);
     printf("funcCode = %#x\n", r->funcCode);
     printf("bodyLen = %d\n", r->bodyLen);
     printf("body = %s\n", r->body);
+#endif
 
     Router(w, r);
 
@@ -126,14 +128,29 @@ bool bufToRequset(request * r, const char * buf)
 
 void * sendw(responseWriter w)
 {
-    char buf[1024];
+    unsigned char buf[1024];
 
     w.msgType = 0xff; 
-    w.bodyLen = strlen(w.body);
+    w.bodyLen = (short)strlen(w.body);
     
-    send(w.client, (void *)&w.msgType, sizeof(w.msgType), 0);
-    send(w.client, (void *)&w.funcCode, sizeof(w.funcCode), 0);
-    send(w.client, (void *)&w.bodyLen, sizeof(w.bodyLen), 0);
-    send(w.client, (void *)w.body, w.bodyLen, 0);
+#if 1
+    printf("msgType = %#x\n", w.msgType);
+    printf("funcCode = %#x\n", w.funcCode);
+    printf("bodyLen = %#x\n", w.bodyLen);
+    printf("%s\n", w.body);
+#endif
 
+    /*
+    send(w.client, (void *)&w.msgType, sizeof(unsigned char), 0);
+    send(w.client, (void *)&w.funcCode, sizeof(unsigned char), 0);
+    send(w.client, (void *)&w.bodyLen, sizeof(unsigned short), 0);
+    send(w.client, (void *)w.body, w.bodyLen, 0);
+    */
+
+    memcpy(&buf[0], &w.msgType, 1); 
+    memcpy(&buf[1], &w.funcCode, 1); 
+    memcpy(&buf[2], &w.bodyLen, 2); 
+    memcpy(&buf[4], w.body, w.bodyLen); 
+
+    send(w.client, (unsigned char *)&w + 4 , 4 + w.bodyLen, 0);
 }
