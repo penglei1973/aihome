@@ -28,13 +28,14 @@ void * changeTheLights(responseWriter w, request * r)
 
     int u_fd;
     char cmd;
+    char rcv_buf[1024];
 
     getValueFromBody(r, "userName", userName); 
     getValueFromBody(r, "userToken", userToken); 
     getValueFromBody(r, "deviceNumber", (void *)&deviceNumber); 
     getValueFromBody(r, "deviceCode", (void *)&deviceCode); 
 
-    if (u_connect() < 0)
+    if ((u_fd = u_connect()) < 0)
     {
         deviceState = STATE_CLOSE;
         stateCode = OPERATION_FAILED;
@@ -46,6 +47,9 @@ void * changeTheLights(responseWriter w, request * r)
         {
             deviceState = STATE_OPEN;
             stateCode = OPERATION_SUCCESSFUL;
+            //收到M0信息
+            u_recv(u_fd, rcv_buf, 1024);
+            printf("msg from M0: %s\n", rcv_buf);
         }
         else
         {
@@ -58,6 +62,7 @@ void * changeTheLights(responseWriter w, request * r)
     setValueToBody(&w, "deviceState", (void *)deviceState, INT_MODE);
     setValueToBody(&w, "stateCode", (void *)stateCode, INT_MODE);
 
+    u_close(u_fd);
     sendw(w);
 }
 
@@ -73,13 +78,14 @@ void * changeFan(responseWriter w, request * r)
 
     int u_fd;
     char cmd;
+    char rcv_buf[1024];
 
     getValueFromBody(r, "userName", userName); 
     getValueFromBody(r, "userToken", userToken); 
     getValueFromBody(r, "deviceNumber", (void *)&deviceNumber); 
     getValueFromBody(r, "deviceCode", (void *)&deviceCode); 
 
-    if (u_connect() < 0)
+    if ((u_fd = u_connect()) < 0)
     {
         deviceState = STATE_CLOSE;
         stateCode = OPERATION_FAILED;
@@ -104,6 +110,7 @@ void * changeFan(responseWriter w, request * r)
     setValueToBody(&w, "deviceState", (void *)deviceState, INT_MODE);
     setValueToBody(&w, "stateCode", (void *)stateCode, INT_MODE);
 
+    u_close(u_fd);
     sendw(w);
 }
 
@@ -118,13 +125,14 @@ void * changeDoor(responseWriter w, request * r)
 
     int u_fd;
     char cmd;
+    char rcv_buf[1024];
 
     getValueFromBody(r, "userName", userName); 
     getValueFromBody(r, "userToken", userToken); 
     getValueFromBody(r, "deviceNumber", (void *)&deviceNumber); 
     getValueFromBody(r, "deviceCode", (void *)&deviceCode); 
 
-    if (u_connect() < 0)
+    if ((u_fd = u_connect()) < 0)
     {
         deviceState = STATE_CLOSE;
         stateCode = OPERATION_FAILED;
@@ -136,6 +144,9 @@ void * changeDoor(responseWriter w, request * r)
         {
             deviceState = STATE_OPEN;
             stateCode = OPERATION_SUCCESSFUL;
+            //收到M0信息
+            u_recv(u_fd, rcv_buf, 1024);
+            printf("msg from M0: %s\n", rcv_buf);
         }
         else
         {
@@ -148,5 +159,6 @@ void * changeDoor(responseWriter w, request * r)
     setValueToBody(&w, "deviceState", (void *)deviceState, INT_MODE);
     setValueToBody(&w, "stateCode", (void *)stateCode, INT_MODE);
 
+    u_close(u_fd);
     sendw(w);
 }

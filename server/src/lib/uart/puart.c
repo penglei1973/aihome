@@ -65,3 +65,7 @@ bool u_send(int uart_fd, char cmd)
     return true;
 }
 
+void u_close(int uart_fd)
+{
+    uart_close(uart_fd);
+}

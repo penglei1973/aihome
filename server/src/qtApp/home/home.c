@@ -29,7 +29,7 @@ void * getTemperature (responseWriter w, request * r)
     getValueFromBody(r, "userToken", userToken); 
     getValueFromBody(r, "deviceNumber", (void *)&deviceNumber); 
 
-    if (u_connect() < 0)
+    if ((u_fd = u_connect()) < 0)
     {
         stateCode = GET_FAILED;
         setValueToBody(&w, "stateCode", (void *)stateCode, INT_MODE);
@@ -39,7 +39,7 @@ void * getTemperature (responseWriter w, request * r)
         cmd = GET_TEMPERATURE;
         if (u_send(u_fd, cmd))
         {
-            if (u_recv(u_fd, rcv_buf, 4))
+            if (u_recv(u_fd, rcv_buf, 1024))
             {
                 stateCode = GET_SUCCESSED;
                 setValueToBody(&w, "stateCode", (void *)stateCode, INT_MODE);
@@ -58,6 +58,7 @@ void * getTemperature (responseWriter w, request * r)
         }
     }
 
+    u_close(u_fd);
     sendw(w);
 }
 
@@ -82,7 +83,7 @@ void * getHumidity (responseWriter w, request * r)
     getValueFromBody(r, "userToken", userToken); 
     getValueFromBody(r, "deviceNumber", (void *)&deviceNumber); 
 
-    if (u_connect() < 0)
+    if ((u_fd = u_connect()) < 0)
     {
         stateCode = GET_FAILED;
         setValueToBody(&w, "stateCode", (void *)stateCode, INT_MODE);
@@ -92,7 +93,7 @@ void * getHumidity (responseWriter w, request * r)
         cmd = GET_HUMIDITY;
         if (u_send(u_fd, cmd))
         {
-            if (u_recv(u_fd, rcv_buf, 4))
+            if (u_recv(u_fd, rcv_buf, 1024))
             {
                 stateCode = GET_SUCCESSED;
                 setValueToBody(&w, "stateCode", (void *)stateCode, INT_MODE);
@@ -111,6 +112,7 @@ void * getHumidity (responseWriter w, request * r)
         }
     }
 
+    u_close(u_fd);
     sendw(w);
 }
 
@@ -135,7 +137,7 @@ void * getLightIntensity (responseWriter w, request * r)
     getValueFromBody(r, "userToken", userToken); 
     getValueFromBody(r, "deviceNumber", (void *)&deviceNumber); 
 
-    if (u_connect() < 0)
+    if ((u_fd = u_connect()) < 0)
     {
         stateCode = GET_FAILED;
         setValueToBody(&w, "stateCode", (void *)stateCode, INT_MODE);
@@ -145,7 +147,7 @@ void * getLightIntensity (responseWriter w, request * r)
         cmd = GET_LIGHTINTENSITY;
         if (u_send(u_fd, cmd))
         {
-            if (u_recv(u_fd, rcv_buf, 4))
+            if (u_recv(u_fd, rcv_buf, 1024))
             {
                 stateCode = GET_SUCCESSED;
                 setValueToBody(&w, "stateCode", (void *)stateCode, INT_MODE);
@@ -164,6 +166,7 @@ void * getLightIntensity (responseWriter w, request * r)
         }
     }
 
+    u_close(u_fd);
     sendw(w);
 }
 

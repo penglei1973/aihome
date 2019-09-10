@@ -241,7 +241,7 @@ int uart_recv(int fd, char *rcv_buf,int data_len,struct timeval *timeout)
         }else if(ret){
             len = read(fd,rcv_buf + count,data_len - count);
             count += len;
-            printf("-------len : %d--------\n",len);
+            //printf("-------len : %d--------\n",len);
         }else{
             printf("Uart recv timeout!\n");
             break;

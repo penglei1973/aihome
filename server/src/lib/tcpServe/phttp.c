@@ -152,5 +152,6 @@ void * sendw(responseWriter w)
     memcpy(&buf[2], &w.bodyLen, 2); 
     memcpy(&buf[4], w.body, w.bodyLen); 
 
-    send(w.client, (unsigned char *)&w + 4 , 4 + w.bodyLen, 0);
+    //send(w.client, (unsigned char *)&w + 4 , 4 + w.bodyLen, 0);
+    send(w.client, (unsigned char *)buf , 4 + w.bodyLen, 0);
 }
